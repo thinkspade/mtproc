@@ -1,0 +1,17 @@
+{
+  "name": "market-trade-processor",
+  "version": "1.0.0",
+  "description": "Consumes trade messages via endpoint",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "SP",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "ndjson": "^1.5.0",
+    "socket.io": "^2.0.3",
+    "sticky-session": "^1.1.2"
+  }
+}

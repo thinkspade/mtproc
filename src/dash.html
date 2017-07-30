@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Market Trade Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="ui.css">
+  </head>
+  <body>
+    <h2>Market Trade Dashboard</h2>
+    <div id="dashboard">
+      <p>Connection Status: <span id="status"></span></p>
+      <p>Total records: <span id="records"></span></p>
+      <table id='tradeTable'>
+        <thead>
+          <tr id="colHead">
+            <th>UserId</th>
+            <th>Currency From</th>
+            <th>Currency To</th>
+            <th>Amount Sell</th>
+            <th>Amount Buy</th>
+            <th>Rate</th>
+            <th>Time Placed</th>
+            <th>Originating Country</th>
+          </tr>
+        </thead>
+        <tbody id=tradeTableBody></tbody>
+      </table>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      let className = 'odd';
+      let iosocket = io();
+      let recordsNode = document.getElementById('records');
+      let tradeTableNode = document.getElementById('tradeTableBody');
+      let status = document.getElementById('status');
+      // this keeps a record of all the data was rendered
+      let records = [];
+
+      iosocket.on('connect', function() {
+        status.innerHTML = 'Connected';
+        records = [];
+        recordsNode.textContent = records.length;
+        tradeTableNode.innerHTML = '';
+      });
+
+      iosocket.on('disconnect', function() {
+        status.innerHTML = 'Disconnected';
+      });
+
+      iosocket.on('message', function(message) {
+        if(Array.isArray(message)) {
+          records = records.concat(message);
+          message.forEach(function(data) {
+            prependRow(data);
+          });
+        } else {
+          records.push(message);
+          prependRow(message);
+        }
+
+        recordsNode.textContent = records.length;
+      });
+
+      /**
+      * Prepends a new row to the table based on the data fetched
+      * from server
+      */
+      function prependRow(data) {
+        var td = '<tr class="'+className+'">'+
+          '<td>'+data.userId+'</td>'+
+          '<td>'+data.currencyFrom+'</td>'+
+          '<td>'+data.currencyTo+'</td>'+
+          '<td>'+data.amountSell+'</td>'+
+          '<td>'+data.amountBuy+'</td>'+
+          '<td>'+data.rate+'</td>'+
+          '<td>'+data.timePlaced+'</td>'+
+          '<td>'+data.originatingCountry+'</td>'+
+       		'</tr>';
+          tradeTableNode.innerHTML = td + tradeTableNode.innerHTML;
+          className = (className==='odd') ? 'even' : 'odd';
+      }
+    </script>
+  </body>
+</html>
